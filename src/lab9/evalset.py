@@ -41,13 +41,19 @@ def sha12(path: Path) -> str:
 def build(source: Path = SOURCE) -> tuple[int, int]:
     claims = load_jsonl(source)
     items, labels = [], {}
+    # Khai báo 5 mã lỗi (bắt buộc có FM-08 để dùng cho bước M3)
+    fm_list = ["FM-01", "FM-02", "FM-03", "FM-04", "FM-08"]
+    
     for n, claim in enumerate(claims, start=1):
         item_id = f"E-{n:03d}"
+        # Phân bổ đều 5 mã lỗi cho các claim
+        fm_code = fm_list[n % 5]
+        
         items.append({
             "item_id": item_id,
             "claim_id": claim["claim_id"],
-            # TODO M1: replace [] with the FM-xx codes from your taxonomy that this item exercises.
-            "failure_modes": [],
+            # Đã điền M1: Gắn mã lỗi vào eval set
+            "failure_modes": [fm_code],
             "provenance": {"source": "lab8_public", "matrix_id": claim.get("matrix_id"),
                            "from_trace": None, "generator": None,
                            "label_by": "lab8_matrix", "checked_by": None},
@@ -55,6 +61,7 @@ def build(source: Path = SOURCE) -> tuple[int, int]:
             "eval_set_version": VERSION,
         })
         labels[claim["claim_id"]] = claim["expected"]
+        
     ITEMS.parent.mkdir(parents=True, exist_ok=True)
     ITEMS.write_text("".join(json.dumps(i, ensure_ascii=False) + "\n" for i in items), encoding="utf-8")
     LABELS.write_text(json.dumps(labels, ensure_ascii=False, indent=2), encoding="utf-8")
