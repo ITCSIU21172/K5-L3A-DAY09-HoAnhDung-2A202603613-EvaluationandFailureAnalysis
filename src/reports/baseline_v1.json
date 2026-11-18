@@ -214,7 +214,7 @@
       "refund_amount_correct": true,
       "pass_rate": true,
       "cost": 12.28
-    },
+    }, 
     {
       "item_id": "E-004",
       "seed": 44,
